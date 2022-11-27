@@ -8,7 +8,7 @@ namespace NTC.OverlapSugar
         public static void PerformOverlap(this OverlapSettings overlapSettings)
         {
             if (overlapSettings.OverlapPoint == null)
-                return;
+                throw new NullReferenceException(nameof(overlapSettings.OverlapPoint), null);
             
             Array.Clear(overlapSettings.Results, 0, overlapSettings.Results.Length);
 
