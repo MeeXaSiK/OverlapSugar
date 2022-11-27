@@ -12,6 +12,7 @@
     * [For single target](#for-single-target)
     * [For many targets](#for-many-targets)
 * [Examples of using](#examples-of-using)
+* [Draw Gizmos](#draw-gizmos)
 
 ## Friendly Settings In Inspector
 
