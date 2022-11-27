@@ -106,3 +106,36 @@ OverlapFinder.TryFindInChildren(_detectedDamageables, overlapSettings);
     }
 ```
 
+## Draw Gizmos
+
+`Also you can draw gizmos of overlap zone:`
+
+```csharp
+    public class UnitMeleeAttack : UnitAttack
+    {
+        [SerializeField] private OverlapSettings overlapSettings;
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            overlapSettings.TryDrawGizmos();
+        }
+#endif
+    }
+```
+
+or
+
+```csharp
+    public class UnitMeleeAttack : UnitAttack
+    {
+        [SerializeField] private OverlapSettings overlapSettings;
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            overlapSettings.TryDrawGizmos();
+        }
+#endif
+    }
+```
