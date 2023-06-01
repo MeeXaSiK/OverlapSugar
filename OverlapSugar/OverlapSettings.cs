@@ -6,49 +6,107 @@ namespace NTC.OverlapSugar
     [Serializable]
     public class OverlapSettings
     {
-        [SerializeField] private LayerMask layerMask;
-        [SerializeField] private Transform overlapPoint;
-        [SerializeField] private OverlapType overlapType;
-        [SerializeField] private Vector3 positionOffset;
-        [SerializeField] private Vector3 boxSize;
-        [SerializeField, Range(0f, 10f), Min(0f)] private float sphereRadius = 0.8f;
-        [SerializeField] private Color gizmosColor;
-        [SerializeField] private bool drawGizmos;
+        [Header("Overlap")]
+        [SerializeField] private LayerMask _searchMask;
+        [SerializeField] private Transform _overlapPoint;
+        [SerializeField] private OverlapType _overlapType;
+        [SerializeField] private Vector3 _positionOffset;
+        
+        [Header("Size")]
+        [SerializeField] private Vector3 _boxSize;
+        [SerializeField, Min(0f)] private float _sphereRadius = 0.8f;
 
+        [Header("Obstacles")] 
+        [SerializeField] private bool _considerObstacles;
+        [SerializeField] private LayerMask _obstaclesMask;
+        
+        [Header("Gizmos")]
+        [SerializeField] private bool _drawGizmos = true;
+        [SerializeField] private Color _gizmosColor = Color.cyan;
+        
         [NonSerialized] public int Size;
-        
-        public readonly Collider[] Results = new Collider[64];
 
-        public LayerMask LayerMask => layerMask;
-        public Transform OverlapPoint => overlapPoint;
-        public OverlapType OverlapType => overlapType;
-        public Vector3 Offset => positionOffset;
-        public Vector3 BoxSize => boxSize;
-        public float SphereRadius => sphereRadius;
-        
-        public void ChangeRoot(Transform newRoot)
+        public readonly Collider[] Results = new Collider[32];
+
+        public LayerMask SearchMask => _searchMask;
+        public Transform OverlapPoint => _overlapPoint;
+        public OverlapType OverlapType => _overlapType;
+        public Vector3 Offset => _positionOffset;
+        public Vector3 BoxSize => _boxSize;
+        public float SphereRadius => _sphereRadius;
+        public bool ConsiderObstacles => _considerObstacles;
+        public LayerMask ObstaclesMask => _obstaclesMask;
+
+        public void ChangeOverlapPoint(Transform newRoot)
         {
             if (newRoot == null)
-                throw new NullReferenceException(nameof(newRoot), null);
+                throw new ArgumentNullException(nameof(newRoot));
             
-            overlapPoint = newRoot;
+            _overlapPoint = newRoot;
+        }
+
+        public void ChangeSearchMask(in LayerMask newMask)
+        {
+            _searchMask = newMask;
+        }
+
+        public void ChangeObstaclesMask(in LayerMask newMask)
+        {
+            _obstaclesMask = newMask;
+        }
+
+        public void ChangeOffset(in Vector3 offset)
+        {
+            _positionOffset = offset;
+        }
+
+        public void SetSphere(in float radius, in Vector3 offset)
+        {
+            _overlapType = OverlapType.Sphere;
+            _sphereRadius = radius;
+            _positionOffset = offset;
+        }
+
+        public void SetBox(in Vector3 size, in Vector3 offset)
+        {
+            _overlapType = OverlapType.Box;
+            _boxSize = size;
+            _positionOffset = offset;
+        }
+
+        public void SetGizmos(bool drawGizmos, in Color color)
+        {
+            _drawGizmos = drawGizmos;
+            _gizmosColor = color;
+        }
+
+        public void EnableConsiderObstacles()
+        {
+            _considerObstacles = true;
         }
         
+        public void DisableConsiderObstacles()
+        {
+            _considerObstacles = false;
+        }
+
         public void TryDrawGizmos()
         {
-            if (drawGizmos == false)
+            if (_drawGizmos == false)
                 return;
             
-            if (overlapPoint == null)
+            if (_overlapPoint == null)
                 return;
             
-            Gizmos.matrix = overlapPoint.localToWorldMatrix;
-            Gizmos.color = gizmosColor;
+            Gizmos.matrix = _overlapPoint.localToWorldMatrix;
+            Gizmos.color = _gizmosColor;
 
-            switch (overlapType)
+            switch (_overlapType)
             {
-                case OverlapType.Box: Gizmos.DrawCube(positionOffset, boxSize); break;
-                case OverlapType.Sphere: Gizmos.DrawSphere(positionOffset, sphereRadius); break;
+                case OverlapType.Box: Gizmos.DrawCube(_positionOffset, _boxSize); break;
+                case OverlapType.Sphere: Gizmos.DrawSphere(_positionOffset, _sphereRadius); break;
+                
+                default: throw new ArgumentOutOfRangeException();
             }
         }
     }

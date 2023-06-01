@@ -29,7 +29,7 @@ namespace NTC.OverlapSugar
             overlapSettings.Size =
                 Physics.OverlapBoxNonAlloc(
                     position, overlapSettings.BoxSize / 2, overlapSettings.Results,
-                    overlapSettings.OverlapPoint.rotation, overlapSettings.LayerMask.value);
+                    overlapSettings.OverlapPoint.rotation, overlapSettings.SearchMask.value);
         }
 
         private static void OverlapSphere(OverlapSettings overlapSettings, in Vector3 position)
@@ -37,7 +37,7 @@ namespace NTC.OverlapSugar
             overlapSettings.Size =
                 Physics.OverlapSphereNonAlloc(
                     position, overlapSettings.SphereRadius, 
-                    overlapSettings.Results, overlapSettings.LayerMask.value);
+                    overlapSettings.Results, overlapSettings.SearchMask.value);
         }
     }
 }
