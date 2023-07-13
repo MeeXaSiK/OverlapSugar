@@ -1,28 +1,28 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static NTC.OverlapSugar.CheckComponentShortCuts;
+using static NTC.OverlapSugar.CheckForComponentShortCuts;
 
 namespace NTC.OverlapSugar
 {
-    public static class OverlapFinder
+    public static class OverlapSettingsExtensions
     {
-        public static bool TryFind<TTarget>(this OverlapSettings overlapSettings, out TTarget target)
+        public static bool TryFind<TComponent>(this OverlapSettings overlapSettings, out TComponent component)
         {
-            return TryFindSingleTarget(overlapSettings, out target, HasComponent);
+            return TryFindSingleComponent(overlapSettings, out component, HasComponent);
         }
 
-        public static bool TryFind<TTarget>(ICollection<TTarget> results, OverlapSettings overlapSettings)
+        public static bool TryFind<TComponent>(this OverlapSettings overlapSettings, ICollection<TComponent> results)
         {
-            return TryFindManyTargets(results, overlapSettings, HasComponent);
+            return TryFindManyComponents(results, overlapSettings, HasComponent);
         }
         
-        public static bool TryFindInChildren<TTarget>(ICollection<TTarget> results, OverlapSettings overlapSettings)
+        public static bool TryFindInChildren<TComponent>(this OverlapSettings overlapSettings, ICollection<TComponent> results)
         {
-            return TryFindManyTargets(results, overlapSettings, HasComponentInChildren);
+            return TryFindManyComponents(results, overlapSettings, HasComponentInChildren);
         }
 
-        private static bool TryFindSingleTarget<TTarget>(this OverlapSettings overlapSettings, out TTarget target, 
-            HasComponent<TTarget> hasComponent) 
+        private static bool TryFindSingleComponent<TComponent>(this OverlapSettings overlapSettings, 
+            out TComponent target, HasComponent<TComponent> hasComponent)
         {
             overlapSettings.PerformOverlap();
 
@@ -36,7 +36,7 @@ namespace NTC.OverlapSugar
                     }
                 }
                 
-                if (hasComponent.Invoke(overlapSettings.Results[i], out target))
+                if (hasComponent.Invoke(overlapSettings.OverlapResults[i], out target))
                 {
                     return true;
                 }
@@ -46,8 +46,8 @@ namespace NTC.OverlapSugar
             return false;
         }
         
-        private static bool TryFindManyTargets<TTarget>(ICollection<TTarget> results, OverlapSettings overlapSettings, 
-            HasComponent<TTarget> hasComponent) 
+        private static bool TryFindManyComponents<TComponent>(ICollection<TComponent> results, 
+            OverlapSettings overlapSettings, HasComponent<TComponent> hasComponent)
         {
             results.Clear();
             overlapSettings.PerformOverlap();
@@ -62,7 +62,7 @@ namespace NTC.OverlapSugar
                     }
                 }
                 
-                if (hasComponent.Invoke(overlapSettings.Results[i], out var target))
+                if (hasComponent.Invoke(overlapSettings.OverlapResults[i], out var target))
                 {
                     results.Add(target);
                 }
@@ -74,7 +74,7 @@ namespace NTC.OverlapSugar
         private static bool HasObstacleOnTheWay(OverlapSettings overlapSettings, int id)
         {
             var startPosition = overlapSettings.OverlapPoint.position;
-            var colliderPosition = overlapSettings.Results[id].transform.position;
+            var colliderPosition = overlapSettings.OverlapResults[id].transform.position;
 
             return Physics.Linecast(startPosition, colliderPosition, overlapSettings.ObstaclesMask);
         }

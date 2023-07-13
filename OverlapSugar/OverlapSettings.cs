@@ -6,16 +6,18 @@ namespace NTC.OverlapSugar
     [Serializable]
     public class OverlapSettings
     {
-        [Header("Overlap")]
+        [Header("Common")]
         [SerializeField] private LayerMask _searchMask;
         [SerializeField] private Transform _overlapPoint;
+
+        [Header("Overlap Area")]
         [SerializeField] private OverlapType _overlapType;
+        [SerializeField] private Vector3 _boxSize = Vector3.one;
+        [SerializeField, Min(0f)] private float _sphereRadius = 0.5f;
+
+        [Header("Offset")]
         [SerializeField] private Vector3 _positionOffset;
         
-        [Header("Size")]
-        [SerializeField] private Vector3 _boxSize;
-        [SerializeField, Min(0f)] private float _sphereRadius = 0.8f;
-
         [Header("Obstacles")] 
         [SerializeField] private bool _considerObstacles;
         [SerializeField] private LayerMask _obstaclesMask;
@@ -26,8 +28,8 @@ namespace NTC.OverlapSugar
         
         [NonSerialized] public int Size;
 
-        public readonly Collider[] Results = new Collider[32];
-
+        public readonly Collider[] OverlapResults = new Collider[32];
+        
         public LayerMask SearchMask => _searchMask;
         public Transform OverlapPoint => _overlapPoint;
         public OverlapType OverlapType => _overlapType;
@@ -37,57 +39,75 @@ namespace NTC.OverlapSugar
         public bool ConsiderObstacles => _considerObstacles;
         public LayerMask ObstaclesMask => _obstaclesMask;
 
-        public void ChangeOverlapPoint(Transform newRoot)
+        public void SetOverlapPoint(Transform newOverlapPoint)
         {
-            if (newRoot == null)
-                throw new ArgumentNullException(nameof(newRoot));
+            if (newOverlapPoint == null)
+                throw new ArgumentNullException(nameof(newOverlapPoint));
             
-            _overlapPoint = newRoot;
+            _overlapPoint = newOverlapPoint;
         }
 
-        public void ChangeSearchMask(in LayerMask newMask)
+        public void SetOverlapType(OverlapType overlapType)
+        {
+            _overlapType = overlapType;
+        }
+
+        public void SetSearchMask(LayerMask newMask)
         {
             _searchMask = newMask;
         }
 
-        public void ChangeObstaclesMask(in LayerMask newMask)
+        public void SetObstaclesMask(LayerMask newMask)
         {
             _obstaclesMask = newMask;
         }
 
-        public void ChangeOffset(in Vector3 offset)
+        public void SetOffset(Vector3 offset)
         {
             _positionOffset = offset;
         }
-
-        public void SetSphere(in float radius, in Vector3 offset)
+        
+        public void SetBoxSize(Vector3 size)
         {
-            _overlapType = OverlapType.Sphere;
-            _sphereRadius = radius;
-            _positionOffset = offset;
-        }
-
-        public void SetBox(in Vector3 size, in Vector3 offset)
-        {
-            _overlapType = OverlapType.Box;
             _boxSize = size;
-            _positionOffset = offset;
         }
 
-        public void SetGizmos(bool drawGizmos, in Color color)
+        public void SetSphereRadius(float radius)
         {
-            _drawGizmos = drawGizmos;
-            _gizmosColor = color;
+            if (radius < 0f)
+                throw new ArgumentOutOfRangeException(nameof(radius));
+            
+            _sphereRadius = radius;
         }
 
-        public void EnableConsiderObstacles()
+        public void EnableObstacleConsideration()
         {
             _considerObstacles = true;
         }
         
-        public void DisableConsiderObstacles()
+        public void DisableObstacleConsideration()
         {
             _considerObstacles = false;
+        }
+
+        public void SetGizmosActive(bool status)
+        {
+            _drawGizmos = status;
+        }
+        
+        public void AllowGizmos()
+        {
+            _drawGizmos = true;
+        }
+
+        public void DisallowGizmos()
+        {
+            _drawGizmos = false;
+        }
+
+        public void SetGizmosColor(Color color)
+        {
+            _gizmosColor = color;
         }
 
         public void TryDrawGizmos()
@@ -106,7 +126,7 @@ namespace NTC.OverlapSugar
                 case OverlapType.Box: Gizmos.DrawCube(_positionOffset, _boxSize); break;
                 case OverlapType.Sphere: Gizmos.DrawSphere(_positionOffset, _sphereRadius); break;
                 
-                default: throw new ArgumentOutOfRangeException();
+                default: throw new ArgumentOutOfRangeException(nameof(_overlapType));
             }
         }
     }
