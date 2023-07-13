@@ -17,7 +17,7 @@
 ## Friendly Settings In Inspector
 
 ```csharp
-[SerializeField] private OverlapSettings overlapSettings;
+[SerializeField] private OverlapSettings _overlapSettings;
 ```
 
 ![OverlapSettings Review Screenshot](https://github.com/MeeXaSiK/OverlapSugar/blob/main/README%20Files/OverlapSettingsReview.PNG)
@@ -32,28 +32,26 @@ using NTC.OverlapSugar;
 #### Overlap Settings
 
 ```csharp
-[SerializeField] private OverlapSettings overlapSettings;
+[SerializeField] private OverlapSettings _overlapSettings;
 ```
 
 #### For Single Target
 
 ```csharp
-OverlapFinder.TryFind(overlapSettings, out IDamageable damageable);
-```
-```csharp
-overlapSettings.TryFind(out IDamageable damageable);
+_overlapSettings.TryFind(out IDamageable damageable);
 ```
 #### For Many Targets
 
 ```csharp
 private readonly List<IDamageable> _detectedDamageables = new List<IDamageable>(32);
 
-OverlapFinder.TryFind(_detectedDamageables, overlapSettings);
+_overlapSettings.TryFind(_detectedDamageables);
 ```
+or
 ```csharp
 private readonly List<IDamageable> _detectedDamageables = new List<IDamageable>(32);
 
-OverlapFinder.TryFindInChildren(_detectedDamageables, overlapSettings);
+_overlapSettings.TryFindInChildren(_detectedDamageables);
 ```
 
 ## Examples Of Using
@@ -66,11 +64,11 @@ OverlapFinder.TryFindInChildren(_detectedDamageables, overlapSettings);
 
     public class UnitMeleeAttack : UnitAttack
     {
-        [SerializeField] private OverlapSettings overlapSettings;
+        [SerializeField] private OverlapSettings _overlapSettings;
 
         public void TryPerformAttack()
         {
-            if (overlapSettings.TryFind(out IDamageable damageable))
+            if (_overlapSettings.TryFind(out IDamageable damageable))
             {
                 damageable.ApplyDamage(Damage);
             }
@@ -86,15 +84,13 @@ OverlapFinder.TryFindInChildren(_detectedDamageables, overlapSettings);
 
     public class UnitMeleeAttack : UnitAttack
     {
-        [SerializeField] private OverlapSettings overlapSettings;
-
-        public IReadOnlyList<IDamageable> DetectedDamageables => _detectedDamageables;
+        [SerializeField] private OverlapSettings _overlapSettings;
 
         private readonly List<IDamageable> _detectedDamageables = new List<IDamageable>(32);
         
         public void TryPerformAttack()
         {
-            if (OverlapFinder.TryFind(_detectedDamageables, overlapSettings))
+            if (_overlapSettings.TryFind(_detectedDamageables))
             {
                 _detectedDamageables.ForEach(ApplyDamage);
             }
@@ -114,12 +110,12 @@ OverlapFinder.TryFindInChildren(_detectedDamageables, overlapSettings);
 ```csharp
     public class UnitMeleeAttack : UnitAttack
     {
-        [SerializeField] private OverlapSettings overlapSettings;
+        [SerializeField] private OverlapSettings _overlapSettings;
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            overlapSettings.TryDrawGizmos();
+            _overlapSettings.TryDrawGizmos();
         }
 #endif
     }
@@ -130,12 +126,12 @@ or
 ```csharp
     public class UnitMeleeAttack : UnitAttack
     {
-        [SerializeField] private OverlapSettings overlapSettings;
+        [SerializeField] private OverlapSettings _overlapSettings;
 
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            overlapSettings.TryDrawGizmos();
+            _overlapSettings.TryDrawGizmos();
         }
 #endif
     }
