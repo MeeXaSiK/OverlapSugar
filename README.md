@@ -1,20 +1,24 @@
-# OverlapSugar
- > Short cuts for Physics.Overlap in Unity by [**Night Train Code**](https://www.youtube.com/c/NightTrainCode)
-* Friendly Overlap Settings in inspector
-* Perform Overlap in one line of code
+# 🚄 Overlap Sugar
+[![License](https://img.shields.io/github/license/meexasik/overlapsugar?color=318CE7&style=flat-square)](LICENSE.md) [![Version](https://img.shields.io/github/package-json/v/MeeXaSiK/OverlapSugar?color=318CE7&style=flat-square)](package.json) [![Unity](https://img.shields.io/badge/Unity-2021.3+-2296F3.svg?color=318CE7&style=flat-square)](https://unity.com/)
 
-## Navigation
+Short cuts for Physics.Overlap in Unity by [**Night Train Code**](https://www.youtube.com/c/NightTrainCode)
+* User-friendly `OverlapSettings` in inspector
+* `PerformOverlap` in one line of code
 
-* [Main](#overlapsugar)
-* Asset Review
-  * [Friendly settings in inspector](#friendly-settings-in-inspector)
+## 🌐 Navigation
+
+* [Main](#-overlap-sugar)
+* [Asset Review](#user-friendly-settings-in-inspector)
+  * [User friendly settings in inspector](#user-friendly-settings-in-inspector)
   * [Overlap in one line of code](#overlap-in-one-line-of-code)
     * [For single target](#for-single-target)
     * [For many targets](#for-many-targets)
-* [Examples of using](#examples-of-using)
-* [Draw Gizmos](#draw-gizmos)
+  * [Examples of using](#examples-of-using)
+  * [Draw Gizmos](#draw-gizmos)
+  * [Perform Overlap method](#perform-overlap-method)
+  * [Custom max results size](#custom-max-results-size)
 
-## Friendly Settings In Inspector
+## User-friendly Settings In Inspector
 
 ```csharp
 [SerializeField] private OverlapSettings _overlapSettings;
@@ -40,6 +44,9 @@ using NTC.OverlapSugar;
 ```csharp
 _overlapSettings.TryFind(out IDamageable damageable);
 ```
+```csharp
+_overlapSettings.TryFindInChildren(out IDamageable damageable);
+```
 #### For Many Targets
 
 ```csharp
@@ -47,7 +54,6 @@ private readonly List<IDamageable> _detectedDamageables = new List<IDamageable>(
 
 _overlapSettings.TryFind(_detectedDamageables);
 ```
-or
 ```csharp
 private readonly List<IDamageable> _detectedDamageables = new List<IDamageable>(32);
 
@@ -120,9 +126,7 @@ _overlapSettings.TryFindInChildren(_detectedDamageables);
 #endif
     }
 ```
-
 or
-
 ```csharp
     public class UnitMeleeAttack : UnitAttack
     {
@@ -135,4 +139,24 @@ or
         }
 #endif
     }
+```
+## Perform Overlap method
+
+You can also use only `PerformOverlap` without components auto-finding:
+```csharp
+_overlapSettings.PerformOverlap();
+```
+Then you can find results here:
+```csharp
+Collider[] results = _overlapSettings.OverlapResults;
+```
+> **Warning!** Method `PerformOverlap` is called in `TryFind` methods!
+
+## Custom max results size
+
+You can set the results collection size by `Init` method:
+
+```csharp
+int maxResultsSize = 32;
+_overlapSettings.Init(maxResultsSize);
 ```
