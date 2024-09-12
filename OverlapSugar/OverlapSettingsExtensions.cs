@@ -1,28 +1,32 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static NTC.OverlapSugar.CheckForComponentShortCuts;
 
 namespace NTC.OverlapSugar
 {
     public static class OverlapSettingsExtensions
     {
-        public static bool TryFind<TComponent>(this OverlapSettings overlapSettings, out TComponent component)
+        public static bool TryFind<T>(this OverlapSettings overlapSettings, out T component)
         {
-            return TryFindSingleComponent(overlapSettings, out component, HasComponent);
+            return TryFindSingleComponent(overlapSettings, out component, HasComponentBehaviour<T>.Default);
         }
 
-        public static bool TryFind<TComponent>(this OverlapSettings overlapSettings, ICollection<TComponent> results)
+        public static bool TryFindInChildren<T>(this OverlapSettings overlapSettings, out T component)
         {
-            return TryFindManyComponents(results, overlapSettings, HasComponent);
+            return TryFindSingleComponent(overlapSettings, out component, HasComponentBehaviour<T>.InChildren);
         }
         
-        public static bool TryFindInChildren<TComponent>(this OverlapSettings overlapSettings, ICollection<TComponent> results)
+        public static bool TryFind<T>(this OverlapSettings overlapSettings, ICollection<T> results)
         {
-            return TryFindManyComponents(results, overlapSettings, HasComponentInChildren);
+            return TryFindManyComponents(results, overlapSettings, HasComponentBehaviour<T>.Default);
+        }
+        
+        public static bool TryFindInChildren<T>(this OverlapSettings overlapSettings, ICollection<T> results)
+        {
+            return TryFindManyComponents(results, overlapSettings, HasComponentBehaviour<T>.InChildren);
         }
 
-        private static bool TryFindSingleComponent<TComponent>(this OverlapSettings overlapSettings, 
-            out TComponent target, HasComponent<TComponent> hasComponent)
+        private static bool TryFindSingleComponent<T>(this OverlapSettings overlapSettings, out T target, 
+            HasComponent<T> hasComponent)
         {
             overlapSettings.PerformOverlap();
 
@@ -46,8 +50,8 @@ namespace NTC.OverlapSugar
             return false;
         }
         
-        private static bool TryFindManyComponents<TComponent>(ICollection<TComponent> results, 
-            OverlapSettings overlapSettings, HasComponent<TComponent> hasComponent)
+        private static bool TryFindManyComponents<T>(ICollection<T> results, OverlapSettings overlapSettings,
+            HasComponent<T> hasComponent)
         {
             results.Clear();
             overlapSettings.PerformOverlap();
@@ -62,7 +66,7 @@ namespace NTC.OverlapSugar
                     }
                 }
                 
-                if (hasComponent.Invoke(overlapSettings.OverlapResults[i], out var target))
+                if (hasComponent.Invoke(overlapSettings.OverlapResults[i], out T target))
                 {
                     results.Add(target);
                 }
@@ -73,9 +77,8 @@ namespace NTC.OverlapSugar
 
         private static bool HasObstacleOnTheWay(OverlapSettings overlapSettings, int id)
         {
-            var startPosition = overlapSettings.OverlapPoint.position;
-            var colliderPosition = overlapSettings.OverlapResults[id].transform.position;
-
+            Vector3 startPosition = overlapSettings.OverlapPoint.position;
+            Vector3 colliderPosition = overlapSettings.OverlapResults[id].transform.position;
             return Physics.Linecast(startPosition, colliderPosition, overlapSettings.ObstaclesMask);
         }
     }
