@@ -5,7 +5,7 @@ namespace NTC.OverlapSugar
 {
     public static class OverlapShortCuts
     {
-        public static OverlapSettings PerformOverlap(this OverlapSettings overlapSettings)
+        public static void PerformOverlap(this OverlapSettings overlapSettings)
         {
 #if DEBUG
             if (overlapSettings.OverlapPoint == null)
@@ -23,8 +23,6 @@ namespace NTC.OverlapSugar
                 case OverlapType.Sphere: OverlapSphere(overlapSettings, position); break;
                 default: throw new ArgumentOutOfRangeException(nameof(overlapSettings.OverlapType));
             }
-
-            return overlapSettings;
         }
 
         private static void OverlapBox(OverlapSettings overlapSettings, Vector3 position)
