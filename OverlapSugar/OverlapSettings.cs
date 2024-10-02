@@ -162,7 +162,7 @@ namespace NTC.OverlapSugar
             
             if (_overlapPoint == null)
                 return false;
-            
+#if UNITY_EDITOR            
             Gizmos.matrix = _overlapPoint.localToWorldMatrix;
             Gizmos.color = _gizmosColor;
 
@@ -172,7 +172,7 @@ namespace NTC.OverlapSugar
                 case OverlapType.Sphere: Gizmos.DrawSphere(_positionOffset, _sphereRadius); break;
                 default: throw new ArgumentOutOfRangeException(nameof(_overlapType));
             }
-
+##endif
             return true;
         }
     }
